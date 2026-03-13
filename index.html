@@ -3,223 +3,391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- ВОТ ЭТА СТРОЧКА ОБХОДИТ БЛОКИРОВКУ КАРТИНОК TIKTOK -->
     <meta name="referrer" content="no-referrer">
     
     <title>TikTok Dota 2 Overlay</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: transparent; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .hud-card {
-            background: linear-gradient(180deg, rgba(20, 20, 20, 0.9) 0%, rgba(5, 5, 5, 0.95) 100%);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(80, 80, 80, 0.6);
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.7);
-            transition: transform 0.2s ease-in-out;
-        }
-        .text-outline { text-shadow: 1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black; }
-        .coin-icon { width: 14px; height: 14px; fill: #FFD700; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8)); margin-left: 2px; }
         
+        .hud-card {
+            background: linear-gradient(180deg, rgba(20, 20, 20, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(80, 80, 80, 0.6);
+            box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.8);
+            transition: transform 0.2s ease-in-out, border-color 0.2s;
+        }
+        .hud-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(150, 150, 150, 0.8);
+        }
+        
+        .text-outline { text-shadow: 1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black, 0px 2px 4px rgba(0,0,0,0.8); }
+        
+        .coin-icon { 
+            width: 16px; 
+            height: 16px; 
+            fill: #FFD700; 
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8)); 
+        }
+        
+        /* Особый стиль для Удаления Доты */
         .delete-dota-card {
             border: 2px solid #FF0050;
-            box-shadow: 0px 0px 25px rgba(255, 0, 80, 0.8);
-            animation: dangerPulse 1s infinite alternate;
+            box-shadow: 0px 0px 25px rgba(255, 0, 80, 0.6);
+            animation: dangerPulse 1.5s infinite alternate;
         }
         @keyframes dangerPulse {
-            from { box-shadow: 0px 0px 15px rgba(255, 0, 80, 0.5); }
-            to { box-shadow: 0px 0px 30px rgba(255, 0, 80, 1); }
+            from { box-shadow: 0px 0px 15px rgba(255, 0, 80, 0.4); border-color: #FF0050; }
+            to { box-shadow: 0px 0px 35px rgba(255, 0, 80, 1); border-color: #ff4d85; }
         }
         
-        /* Стили для иконок подарков из TikTok */
+        /* УВЕЛИЧЕННЫЕ ИКОНКИ ПОДАРКОВ */
         .tiktok-gift-icon {
-            width: 18px;
-            height: 18px;
+            width: 44px;
+            height: 44px;
             object-fit: contain;
-            filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.8));
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.7));
+        }
+
+        /* Увеличенный бейджик с временем/уроном */
+        .duration-badge {
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            background: linear-gradient(180deg, #222, #000);
+            color: #ccc;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            box-shadow: 0px 2px 4px rgba(0,0,0,0.8);
+            line-height: 1.2;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body class="w-screen h-screen relative flex items-end justify-center pb-6">
 
-    <div class="flex flex-col items-center gap-3 w-full max-w-[1920px]">
+    <div class="flex flex-col items-center gap-4 w-full max-w-[1920px] px-4">
         
-        <!-- Верхний ряд: Бесплатные + Мелкие эффекты -->
-        <div class="flex flex-row flex-wrap justify-center gap-2">
+        <!-- =================== ВЕРХНИЙ РЯД =================== -->
+        <div class="flex flex-row flex-wrap justify-center gap-3 items-stretch">
+            
             <!-- 50 Лайков -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2 border-pink-500/30">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/helm_of_the_overlord.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Крип</span>
-                    <span class="text-pink-400 font-black text-[11px] text-outline uppercase mt-0.5">50 Лайков</span>
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-pink-500/30">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <svg class="w-10 h-10 fill-pink-500 drop-shadow-md mb-1.5" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span class="text-pink-400 font-black text-[12px] text-outline uppercase leading-none text-center">50 Лайков</span>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide">Крип</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/helm_of_the_overlord.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge">1 шт</span>
+                    </div>
                 </div>
             </div>
+
             <!-- Репост -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2 border-green-500/30">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/sheepstick.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Хекс <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <span class="text-green-400 font-black text-[11px] text-outline uppercase mt-0.5">Репост</span>
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-green-500/30">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <svg class="w-10 h-10 fill-green-400 drop-shadow-md mb-1.5" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                    <span class="text-green-400 font-black text-[12px] text-outline uppercase leading-none">Репост</span>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide">Хекс</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/sheepstick.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge">10с</span>
+                    </div>
                 </div>
             </div>
+
             <!-- Подписка -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2 border-purple-500/30">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/abyssal_blade.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Стан <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <span class="text-purple-400 font-black text-[11px] text-outline uppercase mt-0.5">Подписка</span>
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-purple-500/30">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <svg class="w-10 h-10 fill-purple-400 drop-shadow-md mb-1.5" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <span class="text-purple-400 font-black text-[12px] text-outline uppercase leading-none">Подписка</span>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide">Стан</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/abyssal_blade.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge">10с</span>
+                    </div>
                 </div>
             </div>
             
-            <!-- Роза (1) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/orchid.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Сайленс <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_5655_1611048868.png~tplv-obj.png" alt="Rose" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=R'">
-                        <span class="text-gray-300 text-[10px]">Rose</span> 
+            <!-- Rose (1) -->
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-rose" src="https://placehold.co/40x40/transparent/ff0050?text=R" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">1</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">1</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide">Сайленс</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/orchid.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge">10с</span>
                     </div>
                 </div>
             </div>
+
             <!-- Finger Heart (5) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/heavens_halberd.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Разоруж. <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_5487_1603875888.png~tplv-obj.png" alt="Heart" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=H'">
-                        <span class="text-gray-300 text-[10px]">Heart</span> 
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-orange-500/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-heart" src="https://placehold.co/40x40/transparent/ff0050?text=H" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">5</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">5</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide text-center leading-tight">Санстрайк</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/invoker_sun_strike.png" class="w-[76px] h-[48px] object-cover rounded border border-orange-600 shadow-inner">
+                        <span class="duration-badge text-orange-300 border-orange-700">Урон</span>
                     </div>
                 </div>
             </div>
-            <!-- Пончик (30) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/cyclone.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Торнадо <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_5978_1614243644.png~tplv-obj.png" alt="Doughnut" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=D'">
-                        <span class="text-gray-300 text-[10px]">Doughnut</span> 
+
+            <!-- Doughnut (30) -->
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-red-500/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-doughnut" src="https://placehold.co/40x40/transparent/ff0050?text=D" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">30</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">30</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide text-center leading-tight">Ульт Лиона</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/lion_finger_of_death.png" class="w-[76px] h-[48px] object-cover rounded border border-red-600 shadow-inner">
+                        <span class="duration-badge text-red-300 border-red-700">700 ХП</span>
                     </div>
                 </div>
             </div>
-            <!-- Усы (99) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/basher.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Стан <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_6059_1615886657.png~tplv-obj.png" alt="Hat" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=M'">
-                        <span class="text-gray-300 text-[10px]">Mustache</span> 
+
+            <!-- Hat and Mustache (99) -->
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-purple-500/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-mustache" src="https://placehold.co/40x40/transparent/ff0050?text=M" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">99</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">99</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide text-center leading-tight">Хроносфера</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/faceless_void_chronosphere.png" class="w-[76px] h-[48px] object-cover rounded border border-purple-600 shadow-inner">
+                        <span class="duration-badge text-purple-300 border-purple-700">50с</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Нижний ряд: Средние эффекты и Герои -->
-        <div class="flex flex-row flex-wrap justify-center gap-2">
-            <!-- Сердца (199) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/bane_nightmare.png" class="w-8 h-8 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Сон <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_5333_1601366914.png~tplv-obj.png" alt="Hearts" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=H'">
-                        <span class="text-gray-300 text-[10px]">Hearts</span> 
+        <!-- =================== НИЖНИЙ РЯД =================== -->
+        <div class="flex flex-row flex-wrap justify-center gap-3 items-stretch">
+            
+            <!-- Hearts (199) -->
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-indigo-500/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-hearts" src="https://placehold.co/40x40/transparent/ff0050?text=H" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">199</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">199</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide">Блэкхол</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/enigma_black_hole.png" class="w-[76px] h-[48px] object-cover rounded border border-indigo-600 shadow-inner">
+                        <span class="duration-badge text-indigo-300 border-indigo-700">15с</span>
                     </div>
                 </div>
             </div>
-            <!-- Корги (299) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2 border-green-500/50">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/sheepstick.png" class="w-10 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Хекс <span class="text-gray-400 text-[9px] normal-case">10с</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_6104_1617094052.png~tplv-obj.png" alt="Corgi" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=C'">
-                        <span class="text-gray-300 text-[10px]">Corgi</span> 
+
+            <!-- Corgi (299) -->
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-green-600/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-corgi" src="https://placehold.co/40x40/transparent/ff0050?text=C" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">299</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">299</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-gray-100 text-[12px] font-bold uppercase text-outline mb-2.5 tracking-wide text-center leading-tight">Коса Некра</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/abilities/necrolyte_reapers_scythe.png" class="w-[76px] h-[48px] object-cover rounded border border-green-600 shadow-inner">
+                        <span class="duration-badge text-green-300 border-green-700">3000 ХП</span>
                     </div>
                 </div>
             </div>
+
             <!-- Money Gun (500) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" class="w-12 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Урса <span class="text-gray-400 text-[9px] normal-case">15 ур.</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_5879_1612847625.png~tplv-obj.png" alt="Gun" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=G'">
-                        <span class="text-gray-300 text-[10px]">Money Gun</span> 
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-amber-600/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-gun" src="https://placehold.co/40x40/transparent/ff0050?text=G" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">500</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">500</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-amber-400 text-[13px] font-black uppercase text-outline mb-2.5 tracking-wide">5x Урса</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge">15 ур.</span>
                     </div>
                 </div>
             </div>
+
             <!-- Galaxy (1000) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/primal_beast.png" class="w-12 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Праймал <span class="text-gray-400 text-[9px] normal-case">20 ур.</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/tiktok_live_revenue_normal_5658_1611051515.png~tplv-obj.png" alt="Galaxy" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=G'">
-                        <span class="text-gray-300 text-[10px]">Galaxy</span> 
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-amber-600/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-galaxy" src="https://placehold.co/40x40/transparent/ff0050?text=G" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">1000</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">1000</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-amber-400 text-[13px] font-black uppercase text-outline mb-2.5 tracking-wide text-center leading-none">10x<br>Праймал</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/primal_beast.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge">20 ур.</span>
                     </div>
                 </div>
             </div>
+
             <!-- Whale Diving (2150) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png" class="w-12 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Пудж <span class="text-green-400 text-[9px] normal-case">25 ур (Респ)</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p19-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/6d616ebecf50abfb2b58e6ddb2610bb4.png~tplv-obj.png" alt="Whale" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=W'">
-                        <span class="text-gray-300 text-[10px]">Whale</span> 
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-emerald-500/30">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <!-- ЖЕСТКО ЗАДАННАЯ КАРТИНКА ПУДЖА -->
+                    <img src="https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/46fa70966d8e931497f5289060f9a794~tplv-obj.webp" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">2150</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">2150</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-emerald-400 text-[13px] font-black uppercase text-outline mb-2.5 tracking-wide">3x Пудж</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge text-emerald-300 border-emerald-700">25 (Респ)</span>
                     </div>
                 </div>
             </div>
+
             <!-- Meteor Shower (3000) -->
-            <div class="hud-card flex items-center gap-2 rounded py-1.5 px-2 border-orange-500/50">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tidehunter.png" class="w-12 h-7 object-cover rounded border border-gray-700">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-white text-[10px] font-bold uppercase text-outline">Тайд <span class="text-green-400 text-[9px] normal-case">30 ур (Респ)</span></span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p19-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/f3b202722b515f400787e35b0c7c7f3b.png~tplv-obj.png" alt="Meteor" class="tiktok-gift-icon" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=M'">
-                        <span class="text-gray-300 text-[10px]">Meteor</span> 
+            <div class="hud-card flex items-center gap-4 rounded-xl py-2.5 px-4 border-emerald-500/40">
+                <div class="flex flex-col items-center justify-center w-[68px]">
+                    <img id="icon-meteor" src="https://placehold.co/40x40/transparent/ff0050?text=M" class="tiktok-gift-icon mb-1.5">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[12px] text-outline">3000</span>
+                        <span class="text-yellow-400 font-black text-[15px] text-outline leading-none">3000</span>
+                    </div>
+                </div>
+                <div class="h-14 w-px bg-white/20 rounded"></div>
+                <div class="flex flex-col items-center w-[96px]">
+                    <span class="text-emerald-400 text-[13px] font-black uppercase text-outline mb-2.5 tracking-wide">3x Тайд</span>
+                    <div class="relative">
+                        <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tidehunter.png" class="w-[76px] h-[48px] object-cover rounded border border-gray-600 shadow-inner">
+                        <span class="duration-badge text-emerald-300 border-emerald-700">30 (Респ)</span>
                     </div>
                 </div>
             </div>
             
-            <!-- TikTok Universe (34999) - УДАЛЕНИЕ ДОТЫ -->
-            <div class="hud-card delete-dota-card flex items-center gap-3 rounded py-1.5 px-4 bg-red-900/40">
-                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rapier.png" class="w-12 h-8 object-cover rounded border border-red-500">
-                <div class="flex flex-col leading-tight">
-                    <span class="text-red-400 text-[14px] font-black uppercase tracking-widest text-outline animate-pulse">УДАЛИТЬ ДОТУ</span>
-                    <div class="flex items-center gap-1 mt-0.5">
-                        <img src="https://p19-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/26fb16c96da99aeb6e2ea8541a7c0d23.png~tplv-obj.png" alt="Universe" class="w-6 h-6 object-contain drop-shadow-md" onerror="this.src='https://placehold.co/40x40/transparent/ff0050?text=U'">
-                        <span class="text-gray-100 text-[11px] font-bold uppercase">Universe</span> 
+            <!-- TikTok Universe (34999) - УДАЛЕНИЕ ДОТЫ И МАЙНКРАФТ -->
+            <div class="hud-card delete-dota-card flex items-center gap-5 rounded-2xl py-3 px-6 bg-red-900/60">
+                <!-- Слева: Иконка подарка Universe -->
+                <div class="flex flex-col items-center justify-center w-[80px]">
+                    <img id="icon-universe" src="https://placehold.co/40x40/transparent/ff0050?text=U" class="w-14 h-14 object-contain drop-shadow-xl mb-2">
+                    <div class="flex items-center gap-1">
                         <svg class="coin-icon" style="width: 18px; height: 18px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
-                        <span class="text-yellow-400 font-black text-[14px] text-outline">34999</span>
+                        <span class="text-yellow-400 font-black text-[18px] text-outline leading-none">34999</span>
                     </div>
+                </div>
+                
+                <div class="h-20 w-px bg-red-500/60 rounded"></div>
+                
+                <!-- Справа: Огромный текст -->
+                <div class="flex flex-col items-center justify-center w-[180px]">
+                    <span class="text-red-400 text-[16px] font-black uppercase text-outline text-center leading-snug animate-pulse tracking-wide">
+                        Удалить доту<br>и играть в<br>Майнкрафт
+                    </span>
                 </div>
             </div>
         </div>
 
     </div>
+
+    <!-- Скрипт загрузки иконок из Supabase -->
+    <script>
+        const SUPABASE_URL = 'https://zagvyrqnayxdbqkcjqud.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_glnqsWdFcmaHOzUrfD5fGA_dt6xiB1f';
+
+        const giftMappings = {
+            'Rose': 'icon-rose',
+            'Finger Heart': 'icon-heart',
+            'Doughnut': 'icon-doughnut',
+            'Hat and Mustache': 'icon-mustache',
+            'Hearts': 'icon-hearts',
+            'Corgi': 'icon-corgi',
+            'Money Gun': 'icon-gun',
+            'Galaxy': 'icon-galaxy',
+            'Meteor Shower': 'icon-meteor',
+            'TikTok Universe': 'icon-universe' // Вернули Universe обратно для подгрузки картинки
+        };
+
+        async function fetchGiftIcons() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/gift_library?select=name,icon`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                const gifts = await response.json();
+                
+                gifts.forEach(gift => {
+                    const cleanName = gift.name.trim(); 
+                    const elementId = giftMappings[cleanName];
+                    
+                    if (elementId && gift.icon) {
+                        const imgElement = document.getElementById(elementId);
+                        if (imgElement) {
+                            imgElement.src = gift.icon; 
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('[Supabase Fetch Error]', error);
+            }
+        }
+
+        fetchGiftIcons();
+    </script>
 </body>
 </html>
