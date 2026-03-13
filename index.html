@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Dota 2 Overlay</title>
+    <!-- Подключаем Tailwind CSS для быстрой и красивой верстки -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Убираем фон, чтобы в OBS была полная прозрачность */
+        body { 
+            background: transparent; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Стиль для каждой карточки */
+        .hud-card {
+            background: linear-gradient(180deg, rgba(30, 30, 30, 0.85) 0%, rgba(15, 15, 15, 0.95) 100%);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(80, 80, 80, 0.6);
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        /* Небольшой эффект пульсации для красоты */
+        @keyframes subtlePulse {
+            0% { border-color: rgba(80, 80, 80, 0.6); }
+            50% { border-color: rgba(150, 150, 150, 0.8); }
+            100% { border-color: rgba(80, 80, 80, 0.6); }
+        }
+
+        .hud-card:hover {
+            transform: translateY(-5px);
+            animation: subtlePulse 2s infinite;
+        }
+
+        /* Обводка текста для идеальной читаемости */
+        .text-outline {
+            text-shadow: 1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black;
+        }
+
+        /* Иконка монетки TikTok (SVG) */
+        .coin-icon {
+            width: 18px;
+            height: 18px;
+            fill: #FFD700;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.8));
+        }
+    </style>
+</head>
+<body class="w-screen h-screen relative flex items-end justify-center pb-12">
+
+    <!-- Главный контейнер со списком цен -->
+    <div class="flex flex-row flex-wrap justify-center gap-3 px-6 w-full max-w-[1920px]">
+
+        <!-- ЛАЙКИ: Спавн крипа -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3 border-pink-500/30">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/helm_of_the_overlord.png" alt="Крип" class="w-12 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Крип
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <!-- Иконка сердечка -->
+                    <svg class="w-4 h-4 fill-pink-500 drop-shadow-md" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span class="text-pink-400 font-black text-[12px] leading-none text-outline uppercase">50 Лайков</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- РЕПОСТ: Хекс -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3 border-green-500/30">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/sheepstick.png" alt="Хекс" class="w-12 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Хекс <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">10 сек</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <!-- Иконка репоста -->
+                    <svg class="w-4 h-4 fill-green-400 drop-shadow-md" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                    <span class="text-green-400 font-black text-[13px] leading-none text-outline uppercase">Репост</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПОДПИСКА: Стан -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3 border-purple-500/30">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/abyssal_blade.png" alt="Стан" class="w-12 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Стан <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">10 сек</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <!-- Иконка звездочки (Саб) -->
+                    <svg class="w-4 h-4 fill-purple-400 drop-shadow-md" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <span class="text-purple-400 font-black text-[11px] leading-none text-outline uppercase">Подписка</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1 Монета: Сайленс (Orchid) -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/orchid.png" alt="Сайленс" class="w-12 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Сайленс <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">10 сек</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">1</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5 Монет: Разоружение (Halberd) -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/heavens_halberd.png" alt="Разоружение" class="w-12 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Разоруж. <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">10 сек</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10 Монет: Оцепенение (Atos) -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/rod_of_atos.png" alt="Оцепенение" class="w-12 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Оцепен. <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">10 сек</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">10</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 50 Монет: Стан (Basher) -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/items/basher.png" alt="Стан" class="w-12 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Стан <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">10 сек</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">50</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 99 Монет: Урса -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/ursa.png" alt="Урса" class="w-14 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Урса <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">15 ур.</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">99</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 299 Монет: Праймал -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/primal_beast.png" alt="Праймал" class="w-14 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Праймал <span class="text-gray-300 text-[10px] normal-case tracking-normal ml-1">20 ур.</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">299</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 500 Монет: Пудж -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge.png" alt="Пудж" class="w-14 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Пудж <span class="text-green-300 text-[10px] normal-case tracking-normal ml-1">25 ур. (Респавн)</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">500</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1000 Монет: Тайдхантер -->
+        <div class="hud-card flex items-center gap-3 rounded-lg py-2 px-3 border-yellow-500">
+            <div class="relative">
+                <img src="https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/tidehunter.png" alt="Тайдхантер" class="w-14 h-10 object-cover rounded border border-gray-700 shadow-inner">
+            </div>
+            <div class="flex flex-col">
+                <span class="text-yellow-300 text-xs font-bold uppercase tracking-wider text-outline whitespace-nowrap">
+                    Тайдхантер <span class="text-green-300 text-[10px] normal-case tracking-normal ml-1">30 ур. (Респавн)</span>
+                </span>
+                <div class="flex items-center gap-1 mt-0.5">
+                    <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#FFD700"/><circle cx="12" cy="12" r="7" fill="#FFA500"/><text x="12" y="16" font-size="12" text-anchor="middle" fill="#FFF" font-weight="bold">T</text></svg>
+                    <span class="text-yellow-400 font-black text-[16px] leading-none text-outline">1000</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
